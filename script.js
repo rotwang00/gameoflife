@@ -10,12 +10,17 @@ let drawCell = (x, y, c, s) => {
   conway.fillRect(x, y, s, s);
 };
 
-let createCurrentGrid = (cols, rows) => {
+let createGrid = (cols, rows) => {
   let arr = new Array(rows);
   for (let i = 0; i < rows; i++) {
     let row = new Array(cols);
     arr[i] = row;
   }
+  // for (let i = 0; i < arr.length; i++) {
+  //   for (let j = 0; j < arr[i].length; j++) {
+  //     arr[i][j] = 0;
+  //   }
+  // }
   return arr;
 };
 
@@ -42,15 +47,6 @@ let drawGrid = (arr) => {
   }
 };
 
-let findNextGen = (arr) => {
-  for (let i = 0; i < arr.length; i++) {
-    for (let j = 0; j < arr[i].length; j++) {
-      let neighbors = findNeighbors(arr, i, j);
-      console.log(neighbors);
-    }
-  }
-};
-
 let findNeighbors = (arr, i, j) => {
   let count = 0;
   // first row
@@ -71,8 +67,39 @@ let findNeighbors = (arr, i, j) => {
   return count;
 };
 
-let currentGrid = createCurrentGrid(rows, cols);
+let findNextGen = (arr) => {
+  let nextGen = createGrid(rows, cols);
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = 0; j < arr[i].length; j++) {
+      let neighbors = findNeighbors(arr, i, j);
+      // console.log(neighbors, i, j);
+      if (arr[i][j] == 0 && neighbors == 3) {
+        // empty cell gets a birth
+        nextGen[i][j] = 1;
+      } else if (neighbors != 2 && neighbors != 3) {
+        // death from overcrowding or loneliness
+        nextGen[i][j] = 0;
+      } else {
+        // survival
+        nextGen[i][j] = 1;
+      }
+    }
+  }
+  return nextGen;
+};
+
+let currentGrid = createGrid(rows, cols);
 fillRandom(currentGrid);
 drawGrid(currentGrid);
 
-console.log(findNeighbors(currentGrid, 69, 39));
+let generationCount = 1;
+
+for (let gen = 0; gen < 10; gen++) {
+  let nextGenGrid = findNextGen(currentGrid);
+  currentGrid = nextGenGrid.map((inner) => inner.slice());
+  setTimeout(() => {
+    console.log(generationCount, gen);
+  }, 2000);
+  drawGrid(currentGrid);
+  generationCount++;
+}
