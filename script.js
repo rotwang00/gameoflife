@@ -1,9 +1,19 @@
 let conway = document.getElementById("conway").getContext("2d");
 let width = document.getElementById("conway").width;
 let height = document.getElementById("conway").height;
-let size = 50;
-let rows = 4;
-let cols = 7;
+let size = 12;
+let rows = 32;
+let cols = 60;
+
+let generationDisplay = document.getElementById("generationDisplay");
+let nextGenerationButton = document.getElementById("nextGenerationButton");
+nextGenerationButton.addEventListener("click", advanceGeneration, false);
+document.addEventListener("keydown", (event) => {
+  const keyName = event.key;
+  if (keyName == "n") {
+    advanceGeneration();
+  }
+});
 
 let drawCell = (x, y, c, s) => {
   conway.fillStyle = c;
@@ -28,15 +38,15 @@ let fillRandom = (arr) => {
   return arr;
 };
 
-let drawGrid = (arr, yOffset) => {
+let drawGrid = (arr) => {
   for (let i = 0; i < arr.length; i++) {
     for (let j = 0; j < arr[i].length; j++) {
       if (arr[i][j] == 1) {
         conway.fillStyle = "black";
-        drawCell(i * (size + 1), j * (size + 1) + yOffset, size, size);
+        drawCell(i * (size + 1), j * (size + 1), size, size);
       } else {
         conway.fillStyle = "lightgrey";
-        drawCell(i * (size + 1), j * (size + 1) + yOffset, size, size);
+        drawCell(i * (size + 1), j * (size + 1), size, size);
       }
     }
   }
@@ -58,8 +68,6 @@ let findNeighbors = (arr, i, j) => {
   if (j + 1 < arr.length && arr[i][j + 1] == 1) count++;
   if (i + 1 < arr.length && j + 1 < arr.length && arr[i + 1][j + 1] == 1)
     count++;
-
-  console.log(i, j, count);
 
   return count;
 };
@@ -85,16 +93,15 @@ let findNextGen = (arr) => {
   return nextGen;
 };
 
+function advanceGeneration() {
+  generationCount++;
+  generationDisplay.textContent = `Generation: ${generationCount}`;
+  let nextGenGrid = findNextGen(currentGrid);
+  drawGrid(nextGenGrid);
+  currentGrid = JSON.parse(JSON.stringify(nextGenGrid));
+}
+
 let currentGrid = createGrid(rows, cols);
 fillRandom(currentGrid);
-drawGrid(currentGrid, 0);
-console.dir(currentGrid);
+drawGrid(currentGrid);
 let generationCount = 1;
-
-let nextGenGrid = findNextGen(currentGrid);
-drawGrid(nextGenGrid, 240);
-console.dir(nextGenGrid);
-// currentGrid = JSON.parse(JSON.stringify(nextGenGrid));
-
-// drawGrid(currentGrid);
-// generationCount++;
