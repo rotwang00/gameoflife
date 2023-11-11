@@ -1,9 +1,9 @@
 let conway = document.getElementById("conway").getContext("2d");
 let width = document.getElementById("conway").width;
 let height = document.getElementById("conway").height;
-let size = 10;
-let rows = 40;
-let cols = 70;
+let size = 50;
+let rows = 4;
+let cols = 7;
 
 let drawCell = (x, y, c, s) => {
   conway.fillStyle = c;
@@ -16,11 +16,6 @@ let createGrid = (cols, rows) => {
     let row = new Array(cols);
     arr[i] = row;
   }
-  // for (let i = 0; i < arr.length; i++) {
-  //   for (let j = 0; j < arr[i].length; j++) {
-  //     arr[i][j] = 0;
-  //   }
-  // }
   return arr;
 };
 
@@ -33,15 +28,15 @@ let fillRandom = (arr) => {
   return arr;
 };
 
-let drawGrid = (arr) => {
+let drawGrid = (arr, yOffset) => {
   for (let i = 0; i < arr.length; i++) {
     for (let j = 0; j < arr[i].length; j++) {
       if (arr[i][j] == 1) {
         conway.fillStyle = "black";
-        drawCell(i * (size + 1), j * (size + 1), size, size);
+        drawCell(i * (size + 1), j * (size + 1) + yOffset, size, size);
       } else {
         conway.fillStyle = "lightgrey";
-        drawCell(i * (size + 1), j * (size + 1), size, size);
+        drawCell(i * (size + 1), j * (size + 1) + yOffset, size, size);
       }
     }
   }
@@ -64,6 +59,8 @@ let findNeighbors = (arr, i, j) => {
   if (i + 1 < arr.length && j + 1 < arr.length && arr[i + 1][j + 1] == 1)
     count++;
 
+  console.log(i, j, count);
+
   return count;
 };
 
@@ -72,7 +69,7 @@ let findNextGen = (arr) => {
   for (let i = 0; i < arr.length; i++) {
     for (let j = 0; j < arr[i].length; j++) {
       let neighbors = findNeighbors(arr, i, j);
-      // console.log(neighbors, i, j);
+
       if (arr[i][j] == 0 && neighbors == 3) {
         // empty cell gets a birth
         nextGen[i][j] = 1;
@@ -80,8 +77,8 @@ let findNextGen = (arr) => {
         // death from overcrowding or loneliness
         nextGen[i][j] = 0;
       } else {
-        // survival
-        nextGen[i][j] = 1;
+        // maintain current condition
+        nextGen[i][j] = arr[i][j];
       }
     }
   }
@@ -90,16 +87,14 @@ let findNextGen = (arr) => {
 
 let currentGrid = createGrid(rows, cols);
 fillRandom(currentGrid);
-drawGrid(currentGrid);
-
+drawGrid(currentGrid, 0);
+console.dir(currentGrid);
 let generationCount = 1;
 
-for (let gen = 0; gen < 10; gen++) {
-  let nextGenGrid = findNextGen(currentGrid);
-  currentGrid = nextGenGrid.map((inner) => inner.slice());
-  setTimeout(() => {
-    console.log(generationCount, gen);
-  }, 2000);
-  drawGrid(currentGrid);
-  generationCount++;
-}
+let nextGenGrid = findNextGen(currentGrid);
+drawGrid(nextGenGrid, 240);
+console.dir(nextGenGrid);
+// currentGrid = JSON.parse(JSON.stringify(nextGenGrid));
+
+// drawGrid(currentGrid);
+// generationCount++;
