@@ -4,8 +4,10 @@ let height = document.getElementById("conway").height;
 let size = 12;
 let rows = 32;
 let cols = 60;
+let population = 0;
 
 let generationDisplay = document.getElementById("generationDisplay");
+let populationDisplay = document.getElementById("populationDisplay");
 let nextGenerationButton = document.getElementById("nextGenerationButton");
 nextGenerationButton.addEventListener("click", advanceGeneration, false);
 document.addEventListener("keydown", (event) => {
@@ -32,7 +34,9 @@ let createGrid = (cols, rows) => {
 let fillRandom = (arr) => {
   for (let i = 0; i < arr.length; i++) {
     for (let j = 0; j < arr[i].length; j++) {
-      arr[i][j] = Math.floor(Math.random() * 2);
+      let status = Math.floor(Math.random() * 2);
+      if (status == 1) population++;
+      arr[i][j] = status;
     }
   }
   return arr;
@@ -77,13 +81,14 @@ let findNextGen = (arr) => {
   for (let i = 0; i < arr.length; i++) {
     for (let j = 0; j < arr[i].length; j++) {
       let neighbors = findNeighbors(arr, i, j);
-
       if (arr[i][j] == 0 && neighbors == 3) {
         // empty cell gets a birth
         nextGen[i][j] = 1;
-      } else if (neighbors != 2 && neighbors != 3) {
+        population++;
+      } else if (neighbors != 2 && neighbors != 3 && arr[i][j] == 1) {
         // death from overcrowding or loneliness
         nextGen[i][j] = 0;
+        population--;
       } else {
         // maintain current condition
         nextGen[i][j] = arr[i][j];
@@ -97,6 +102,7 @@ function advanceGeneration() {
   generationCount++;
   generationDisplay.textContent = `Generation: ${generationCount}`;
   let nextGenGrid = findNextGen(currentGrid);
+  populationDisplay.textContent = `Population: ${population}`;
   drawGrid(nextGenGrid);
   currentGrid = JSON.parse(JSON.stringify(nextGenGrid));
 }
@@ -104,4 +110,5 @@ function advanceGeneration() {
 let currentGrid = createGrid(rows, cols);
 fillRandom(currentGrid);
 drawGrid(currentGrid);
+populationDisplay.textContent = `Population: ${population}`;
 let generationCount = 1;
