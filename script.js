@@ -1,6 +1,11 @@
+let conwayCanvas = document.getElementById("conway");
 let conway = document.getElementById("conway").getContext("2d");
 let width = document.getElementById("conway").width;
 let height = document.getElementById("conway").height;
+conwayCanvas.addEventListener("mousedown", function (e) {
+  getMousePosition(conwayCanvas, e);
+});
+
 let size = 12;
 let rows = 32;
 let cols = 60;
@@ -106,6 +111,16 @@ function advanceGeneration() {
   drawGrid(nextGenGrid);
   currentGrid = JSON.parse(JSON.stringify(nextGenGrid));
 }
+
+function getMousePosition(canvas, event) {
+  let rect = canvas.getBoundingClientRect();
+  let x = event.clientX - rect.left;
+  let y = event.clientY - rect.top;
+  console.log("Coordinate x: " + x, "Coordinate y: " + y);
+  handleClick(canvas, x, y);
+}
+
+function handleClick(canvas, x, y) {}
 
 let currentGrid = createGrid(rows, cols);
 fillRandom(currentGrid);
