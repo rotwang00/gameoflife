@@ -114,16 +114,34 @@ function advanceGeneration() {
 
 function getMousePosition(canvas, event) {
   let rect = canvas.getBoundingClientRect();
-  let x = event.clientX - rect.left;
-  let y = event.clientY - rect.top;
+  let x = Math.round(event.clientX - rect.left);
+  let y = Math.round(event.clientY - rect.top);
   console.log("Coordinate x: " + x, "Coordinate y: " + y);
   handleClick(canvas, x, y);
 }
 
-function handleClick(canvas, x, y) {}
+function handleClick(canvas, x, y) {
+  if (x > 11 && (x - 12) % 13 == 0) console.log("X not suitable");
+  if (y > 11 && (y - 12) % 13 == 0) console.log("Y not suitable");
+  let xSquare = Math.floor(x / 12);
+  let ySquare = Math.floor(y / 12);
+  console.log(xSquare, ySquare);
+  if (currentGrid[xSquare][ySquare] == 0) {
+    currentGrid[xSquare][ySquare] = 1;
+    population++;
+  } else {
+    currentGrid[xSquare][ySquare] = 0;
+    population--;
+  }
+  updateDisplay(currentGrid);
+}
+
+function updateDisplay() {
+  drawGrid(currentGrid);
+  populationDisplay.textContent = `Population: ${population}`;
+}
 
 let currentGrid = createGrid(rows, cols);
 fillRandom(currentGrid);
-drawGrid(currentGrid);
-populationDisplay.textContent = `Population: ${population}`;
+updateDisplay(currentGrid);
 let generationCount = 1;
